@@ -1,9 +1,5 @@
 <?php
 echo "<h1>Ejercicio 1</h1>";
-
-echo "<h1>Ejercicio 1</h1>"; 
-
-
 $personas = array(
     "nombre" => "Sara",
     "Apellido" => "Martinez",

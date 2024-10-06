@@ -1,75 +1,122 @@
 <?php
 session_start();
 
-
-if (!isset($_SESSION["sofDrink"])) {
-    $_SESSION["sofDrink"] = 0;
+if (!isset($_SESSION['empleado'])) {
+    $_SESSION['empleado'] = '';
 }
-
-if (!isset($_SESSION["milk"])) {
-    $_SESSION["milk"] = 0;
+if (!isset($_SESSION['milk'])) {
+    $_SESSION['milk'] = 0;
 }
-
+if (!isset($_SESSION['soft_drink'])) {
+    $_SESSION['soft_drink'] = 0;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nombre_empleado = $_POST['nombre_empleado'];
+    $producto_seleccionado = $_POST['producto'];
+    $cantidad = $_POST['cantidad'];
 
-    $worker = $_POST["name"];
-    $quantity = $_POST["quantity"];
-    $product = $_POST["product"];
-    $_SESSION["name"] = $worker;
+    $_SESSION['empleado'] = $nombre_empleado;
 
-    if (isset($_POST["add"])) {
-        switch ($product) {
-            case "milk":
-                $_SESSION["milk"] += $quantity;
-                break;
-            case "softdrink":
-                $_SESSION["softDrink"] += $quantity;
-                break;
-            default:
-                echo  "<br><font color='red'><p>Error</p></font>";
+    if (isset($_POST['agregar'])) {
+        if ($producto_seleccionado === 'milk') {
+            $_SESSION['milk'] += $cantidad;
+        } elseif ($producto_seleccionado === 'soft_drink') {
+            $_SESSION['soft_drink'] += $cantidad;
         }
-    } elseif (isset($_POST["remove"])) {
+    } elseif (isset($_POST['quitar'])) {
+        if ($producto_seleccionado === 'milk') {
+            if ($_SESSION['milk'] >= $cantidad) {
+                $_SESSION['milk'] -= $cantidad;
+            } else {
+                echo "error";
+            }
+        } elseif ($producto_seleccionado === 'soft_drink') {
+            if ($_SESSION['soft_drink'] >= $cantidad) {
+                $_SESSION['soft_drink'] -= $cantidad;
+            } else {
+                echo "error";
+            }
+        }
+    } elseif (isset($_POST['reiniciar'])) {
+        $_SESSION['milk'] = 0;
+        $_SESSION['soft_drink'] = 0;
     }
 }
-
 
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Gestión de Supermercado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h2 {
+            color: #333;
+        }
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        h3 {
+            color: #555;
+        }
+    </style>
 </head>
-
 <body>
-    <form action="ejercicioSesion1.php" method="post">
-        <h1>Supermarket management</h1>
-        <label for="name">Worker name</label>
-        <input type="text" name="name" id="name" value=<?php echo isset($_SESSION["name"]) ? $_SESSION["name"] : ''; ?> required>
-
-        <h1>Choose product</h1>
-        <select name="product" id="product">
-            <option value="softDrink">Soft drink</option>
-            <option value="milk">Milk</option>
+    <h2>Gestión de Supermercado</h2>
+    
+    <form method="post" action="">
+        <label for="nombre_empleado">Nombre del empleado:</label>
+        <input type="text" name="nombre_empleado" id="nombre_empleado" value="<?php echo $_SESSION['empleado']; ?>" required>
+        
+        <label for="producto">Seleccionar producto:</label>
+        <select name="producto" id="producto">
+            <option value="milk">Leche</option>
+            <option value="soft_drink">Bebida Gaseosa</option>
         </select>
-
-        <label for="quantity">
-            <h1>Product quantity:</h1>
-        </label>
-        <input type="number" name="quantity" min="0" max="100" required>
-        <input type="submit" name="add" id="add" value="Add">
-        <input type="submit" name="remove" id="remove" value="Remove">
-        <input type="submit" name="reset" id="reset" value="Reset">
+        
+        <label for="cantidad">Cantidad del producto:</label>
+        <input type="number" name="cantidad" id="cantidad" min="1" required>
+        
+        <button type="submit" name="agregar">Agregar</button>
+        <button type="submit" name="quitar">Quitar</button>
+        <button type="submit" name="reiniciar">Reiniciar</button>
     </form>
-
-    <h1>Inventory:</h1>
-    <p>Worker: <?php echo isset($_SESSION["name"]) ? $_SESSION["name"] : ''; ?></p>
-    <p>Units of Milk: <?php echo $_SESSION["milk"]; ?></p>
-    <p>Units of Soft Drink: <?php echo $_SESSION["sofDrink"]; ?></p>
+    
+    <h3>Inventario:</h3>
+    <p>Empleado: <?php echo $_SESSION['empleado']; ?></p>
+    <p>Unidades de leche: <?php echo $_SESSION['milk']; ?></p>
+    <p>Unidades de bebida gaseosa: <?php echo $_SESSION['soft_drink']; ?></p>
 </body>
-
 </html>
